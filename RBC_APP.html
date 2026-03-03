@@ -2298,7 +2298,8 @@
                                 clicks: 0,
                                 cpc: 0,
                                 completeViews: 0,
-                                cpcv: 0
+                                cpcv: 0,
+                                cple: 0
                             });
                         }
 
@@ -2346,6 +2347,12 @@
                     let total = getWeekTotal(row);
                     let existing = partners.find(p => `${p.partner}|${p.mediaType}` === partnerKey);
                     if (existing && total > 0) { existing.completeViews = total; existing.cpcv = existing.spend / total; }
+                }
+
+                if (metric === 'Cost per Total App Complete') {
+                    let val = getWeekTotal(row);
+                    let existing = partners.find(p => `${p.partner}|${p.mediaType}` === partnerKey);
+                    if (existing && val > 0) existing.cple = val;
                 }
             }
 
@@ -2463,7 +2470,8 @@
                                 clicks: 0,
                                 cpc: 0,
                                 completeViews: 0,
-                                cpcv: 0
+                                cpcv: 0,
+                                cple: 0
                             });
                         }
 
@@ -2526,6 +2534,12 @@
                     let existing = partners.find(p => `${p.partner}|${p.mediaType}` === partnerKey);
                     if (existing && val > 0) existing.cpcv = val;
                 }
+
+                if (metric === 'Cost per Total App Complete') {
+                    let val = grandTotalCol >= 0 && row[grandTotalCol] != null ? parseNum(row[grandTotalCol]) : 0;
+                    let existing = partners.find(p => `${p.partner}|${p.mediaType}` === partnerKey);
+                    if (existing && val > 0) existing.cple = val;
+                }
             }
 
             // Convert weekly totals to array
@@ -2575,7 +2589,8 @@
                         clicks: 0,
                         cpc: 0,
                         completeViews: 0,
-                        cpcv: 0
+                        cpcv: 0,
+                        cple: 0
                     };
                 }
                 const g = grouped[key];
@@ -2584,6 +2599,7 @@
                 g.viewableImpressions += (p.viewableImpressions || 0);
                 g.clicks += (p.clicks || 0);
                 g.completeViews += (p.completeViews || 0);
+                if (p.cple > 0) g.cple = p.cple;
                 // Merge optimizing KPIs (deduplicated)
                 (p.optimizingKPIs || []).forEach(kpi => {
                     if (!g.optimizingKPIs.includes(kpi)) g.optimizingKPIs.push(kpi);
@@ -3627,13 +3643,47 @@
             // Generate auto-insights based on actual data
             const highlights = [];
 
-            // Find best CPM performer
-            const sorted = [...filteredPartners].sort((a, b) => a.cpm - b.cpm);
-            const bestCPM = sorted[0];
-            if (bestCPM && sorted.length > 1) {
+            // Helper: get KPI label for a partner
+            function getPartnerKPILabel(p) {
+                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || null;
+                if (kpi) {
+                    const kl = kpi.toLowerCase();
+                    if (kl.includes('viewable') && kl.includes('cpm')) return 'eCPM';
+                    if (kl === 'cpm') return 'CPM';
+                    if (kl === 'ecpm') return 'eCPM';
+                    if (kl === 'cpc') return 'CPC';
+                    if (kl === 'cpcv') return 'CPCV';
+                    if (kl === 'cple' || kl === 'cplpe') return 'CPLE';
+                    if (kl === 'cpa') return 'CPA';
+                    return kpi;
+                }
+                return 'eCPM';
+            }
+
+            // Helper: get KPI value for a partner
+            function getPartnerKPIValue(p) {
+                const label = getPartnerKPILabel(p);
+                switch (label) {
+                    case 'eCPM': return p.viewableEcpm || p.cpm || p.ecpm || 0;
+                    case 'CPM': return p.cpm || p.ecpm || 0;
+                    case 'CPC': return p.cpc || 0;
+                    case 'CPCV': return p.cpcv || 0;
+                    case 'CPLE': return p.cple || p.cpm || p.ecpm || 0;
+                    default: return p.cpm || p.ecpm || 0;
+                }
+            }
+
+            // Find best performer (lowest KPI value = most cost-efficient)
+            const sorted = [...filteredPartners]
+                .filter(p => getPartnerKPIValue(p) > 0)
+                .sort((a, b) => getPartnerKPIValue(a) - getPartnerKPIValue(b));
+            const bestPartner = sorted[0];
+            if (bestPartner && sorted.length > 1) {
+                const bestKPILabel = getPartnerKPILabel(bestPartner);
+                const bestKPIValue = getPartnerKPIValue(bestPartner);
                 highlights.push({
                     type: 'good',
-                    text: `<strong>${bestCPM.partner}</strong> is the most cost-efficient partner at <strong>$${bestCPM.cpm.toFixed(2)}</strong> eCPM (${bestCPM.mediaType}).`
+                    text: `<strong>${bestPartner.partner}</strong> is the most cost-efficient partner at <strong>$${bestKPIValue.toFixed(2)}</strong> ${bestKPILabel} (${bestPartner.mediaType}).`
                 });
             }
 
@@ -3646,14 +3696,13 @@
                 if (!bm) return;
 
                 // Use the right benchmark field based on partner's KPI
-                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0] || '').toLowerCase();
+                const kpiLabel = getPartnerKPILabel(p);
                 let actualVal, bmVal;
-                if (kpi === 'cpc') {
-                    actualVal = p.cpc || 0;
-                    bmVal = bm.cpc;
-                } else {
-                    actualVal = p.cpm || 0;
-                    bmVal = bm.cpm;
+                switch (kpiLabel) {
+                    case 'CPC': actualVal = p.cpc || 0; bmVal = bm.cpc; break;
+                    case 'CPCV': actualVal = p.cpcv || 0; bmVal = bm.vcr; break;
+                    case 'CPLE': actualVal = p.cple || p.cpm || p.ecpm || 0; bmVal = bm.cpm; break;
+                    default: actualVal = p.cpm || 0; bmVal = bm.cpm; break;
                 }
 
                 if (bmVal === null || bmVal === undefined || bmVal === 0 || actualVal === 0) return;
@@ -3954,6 +4003,7 @@
                     case 'CPM': return p.cpm || p.ecpm || 0;
                     case 'CPC': return p.cpc || 0;
                     case 'CPCV': return p.cpcv || 0;
+                    case 'CPLE': return p.cple || p.cpm || p.ecpm || 0;
                     default: return p.cpm || p.ecpm || 0;
                 }
             }
@@ -4326,6 +4376,23 @@
                 <p>Review partner performance regularly and adjust allocations based on campaign objectives and results.</p>`;
             }
 
+            if (q.includes('canada') || q.includes('canadian') || q.includes('banking trend')) {
+                return `<p>Here are key <strong>Canadian banking trends</strong> to consider for RBC campaigns:</p>
+                <ul>
+                    <li><strong>Interest Rates:</strong> BoC holding at 2.25% since Oct 2025 (after 275 bps of cuts). ~1.2M mortgages renewing in 2025-2026 - highlight competitive renewal rates</li>
+                    <li><strong>Housing Market:</strong> Stabilizing market with CREA forecasting +5.1% sales in 2026. Pent-up demand from first-time buyers - mortgage pre-approval and FHSA messaging opportunity</li>
+                    <li><strong>Digital Adoption:</strong> 76% of Canadians use mobile banking - prioritize mobile-first creative</li>
+                    <li><strong>Open Banking:</strong> Consumer-Directed Banking Act (Bill C-15) framework launching 2026 - position RBC as innovation leader</li>
+                    <li><strong>FHSA Awareness:</strong> First Home Savings Account still has low awareness - education opportunity aligned with housing recovery</li>
+                </ul>
+                <p><strong>Seasonal opportunities:</strong></p>
+                <ul>
+                    <li>RRSP Season (Jan-Mar): Retirement savings push</li>
+                    <li>Tax Season (Mar-Apr): TFSA contributions</li>
+                    <li>Back to School (Aug-Sep): Student accounts</li>
+                </ul>`;
+            }
+
             if (q.includes('trend') || q.includes('weekly')) {
                 if (ctx.weekly.length === 0) {
                     return `<p>I don't have weekly trend data available for this campaign. Upload files with weekly breakdowns to enable trend analysis.</p>`;
@@ -4426,23 +4493,6 @@
                     return `<p>I don't have budget information configured. Go to the <strong>Benchmarks & Budget</strong> tab to set your total campaign budget and dates for pacing analysis.</p>
                     <p>Based on your current spend of <strong>${formatCurrency(ctx.totalSpend)}</strong>, I can provide pacing recommendations once you configure your budget targets.</p>`;
                 }
-            }
-
-            if (q.includes('canada') || q.includes('canadian') || q.includes('banking trend')) {
-                return `<p>Here are key <strong>Canadian banking trends</strong> to consider for RBC campaigns:</p>
-                <ul>
-                    <li><strong>Interest Rates:</strong> BoC holding at 2.25% since Oct 2025 (after 275 bps of cuts). ~1.2M mortgages renewing in 2025-2026 - highlight competitive renewal rates</li>
-                    <li><strong>Housing Market:</strong> Stabilizing market with CREA forecasting +5.1% sales in 2026. Pent-up demand from first-time buyers - mortgage pre-approval and FHSA messaging opportunity</li>
-                    <li><strong>Digital Adoption:</strong> 76% of Canadians use mobile banking - prioritize mobile-first creative</li>
-                    <li><strong>Open Banking:</strong> Consumer-Directed Banking Act (Bill C-15) framework launching 2026 - position RBC as innovation leader</li>
-                    <li><strong>FHSA Awareness:</strong> First Home Savings Account still has low awareness - education opportunity aligned with housing recovery</li>
-                </ul>
-                <p><strong>Seasonal opportunities:</strong></p>
-                <ul>
-                    <li>RRSP Season (Jan-Mar): Retirement savings push</li>
-                    <li>Tax Season (Mar-Apr): TFSA contributions</li>
-                    <li>Back to School (Aug-Sep): Student accounts</li>
-                </ul>`;
             }
 
             if (q.includes('competitor') || q.includes('td') || q.includes('bmo') || q.includes('scotiabank') || q.includes('cibc')) {

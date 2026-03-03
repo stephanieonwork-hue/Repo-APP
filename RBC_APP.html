@@ -220,10 +220,14 @@
 
         /* KPI Grid */
         .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            display: flex;
             gap: 12px;
             margin-bottom: 16px;
+            overflow-x: auto;
+        }
+        .kpi-grid > .kpi-card, #kpi-blended-container > .kpi-card {
+            flex: 1 1 0;
+            min-width: 120px;
         }
         #kpi-blended-container {
             display: contents;
@@ -675,7 +679,8 @@
         .summary-stat-value { font-size: 14px; font-weight: 700; color: var(--gray-900); }
 
         @media (max-width: 1200px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .kpi-grid { flex-wrap: wrap; }
+            .kpi-grid > .kpi-card { min-width: 140px; }
             .charts-grid { grid-template-columns: repeat(2, 1fr); }
             .ai-container { grid-template-columns: 1fr; }
             .quick-questions { display: none; }
@@ -1540,12 +1545,12 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="kpi-card highlight" title="Total media investment across all partners and campaigns">
+                    <div class="kpi-card highlight" data-kpi-key="investment" title="Total media investment across all partners and campaigns">
                         <div class="kpi-label">Total Investment</div>
                         <div class="kpi-value" id="kpi-spend">$0</div>
                         <div class="kpi-sub" id="kpi-spend-sub">Across all partners</div>
                     </div>
-                    <div class="kpi-card" title="Total number of ad impressions delivered to audiences">
+                    <div class="kpi-card" data-kpi-key="impressions" title="Total number of ad impressions delivered to audiences">
                         <div class="kpi-label">Total Impressions</div>
                         <div class="kpi-value" id="kpi-imps">0</div>
                         <div class="kpi-sub">Total reach</div>
@@ -1557,7 +1562,7 @@
                             <div class="kpi-sub">Cost per thousand</div>
                         </div>
                     </div>
-                    <div class="kpi-card" title="Number of unique media partners/vendors in this campaign">
+                    <div class="kpi-card" data-kpi-key="partners" title="Number of unique media partners/vendors in this campaign">
                         <div class="kpi-label">Active Partners</div>
                         <div class="kpi-value" id="kpi-partners">0</div>
                         <div class="kpi-sub">Media partners</div>
@@ -2809,7 +2814,7 @@
 
                 const formatted = val > 0 ? '$' + (label === 'CPCV' ? val.toFixed(3) : val.toFixed(2)) : '--';
                 const desc = kpiDescriptions[label] || label;
-                blendedHtml += `<div class="kpi-card" title="Total ${label} across partners optimizing toward ${label}">
+                blendedHtml += `<div class="kpi-card" data-kpi-key="${label}" title="Total ${label} across partners optimizing toward ${label}">
                     <div class="kpi-label">Total ${label}</div>
                     <div class="kpi-value">${formatted}</div>
                     <div class="kpi-sub">${desc}</div>
@@ -6023,10 +6028,22 @@
                         .replace(/[\u{1F534}\u{1F7E1}\u{2B50}\u{1F4CA}\u{1F4C8}\u{1F4B0}\u{1F3AF}\u{1F4CF}\u{1F4A1}\u{2705}\u{26A0}\u{274C}\u{1F6A8}]/gu, '')
                         // Remove any remaining emojis (broader pattern)
                         .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
+                        .replace(/[\u{1F100}-\u{1F1FF}]/gu, '')
+                        .replace(/[\u{1FA00}-\u{1FAFF}]/gu, '')
                         .replace(/[\u{2600}-\u{26FF}]/gu, '')
                         .replace(/[\u{2700}-\u{27BF}]/gu, '')
-                        // Clean up bullet points - replace with dash
+                        .replace(/[\u{FE00}-\u{FE0F}]/gu, '') // Variation selectors
+                        .replace(/[\u{200D}]/gu, '') // Zero-width joiner
+                        .replace(/[\u{20E3}]/gu, '') // Combining enclosing keycap
+                        // Remove supplemental symbols (covers 🖥 U+1F5A5 etc)
+                        .replace(/[\u{1F500}-\u{1F5FF}]/gu, '')
+                        // Remove miscellaneous symbols
+                        .replace(/[\u{2300}-\u{23FF}]/gu, '')
+                        .replace(/[\u{2B00}-\u{2BFF}]/gu, '')
+                        // Clean up bullet points and special chars
                         .replace(/•/g, '-')
+                        .replace(/[▼▲►◄▾▴]/g, '')
+                        .replace(/📌|📝|✏️/g, '')
                         // Clean up multiple spaces
                         .replace(/\s+/g, ' ')
                         .trim();
@@ -6335,32 +6352,96 @@
                 }
                 y = addSectionTitle('INSIGHTS & RECOMMENDATIONS', y);
 
-                // Key Highlights
-                const highlightsList = document.querySelector('#exec-summary-banner .exec-highlights-list');
+                // Executive Summary Banner
+                const bannerH = 20;
+                pdf.setFillColor(...rbcNavy);
+                pdf.rect(margin, y, contentWidth, bannerH, 'F');
+
+                // Banner title + subtitle
+                const esCampaignName = campaigns.length > 0 ? campaigns[0].name : 'Campaign';
+                const esWeekLabels = dataContext.weekLabels || [];
+                let esPeriodText = '';
+                if (esWeekLabels.length > 0) {
+                    esPeriodText = esWeekLabels[0] + ' \u2013 ' + esWeekLabels[esWeekLabels.length - 1];
+                }
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text('Executive Summary', margin + 4, y + 7);
+                pdf.setFontSize(6.5);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(200, 210, 220);
+                pdf.text(esCampaignName + (esPeriodText ? ' \u00B7 ' + esPeriodText : ''), margin + 4, y + 12);
+
+                // KPI boxes on right side of banner
+                const esCtx = dataContext;
+                const esKpis = [
+                    { label: 'SPEND', value: formatCurrency(esCtx.totalSpend), gold: false },
+                    { label: 'IMPRESSIONS', value: (esCtx.totalImps / 1e6).toFixed(1) + 'M', gold: false },
+                    { label: 'BLENDED CPM', value: '$' + esCtx.avgCPM.toFixed(2), gold: true },
+                    { label: 'PARTNERS', value: '' + esCtx.partnerCount, gold: false }
+                ];
+                let kpiRightX = pageWidth - margin - 4;
+                for (let ki = esKpis.length - 1; ki >= 0; ki--) {
+                    const kpi = esKpis[ki];
+                    pdf.setFontSize(5);
+                    const labelW = pdf.getTextWidth(kpi.label);
+                    pdf.setFontSize(10);
+                    const valW = pdf.getTextWidth(kpi.value);
+                    const boxW = Math.max(labelW, valW) + 6;
+                    kpiRightX -= boxW;
+                    // Label
+                    pdf.setFontSize(5);
+                    pdf.setFont('helvetica', 'normal');
+                    pdf.setTextColor(180, 195, 215);
+                    pdf.text(kpi.label, kpiRightX + boxW / 2, y + 6, { align: 'center' });
+                    // Value
+                    pdf.setFontSize(10);
+                    pdf.setFont('helvetica', 'bold');
+                    if (kpi.gold) pdf.setTextColor(...rbcGold);
+                    else pdf.setTextColor(255, 255, 255);
+                    pdf.text(kpi.value, kpiRightX + boxW / 2, y + 14, { align: 'center' });
+                    kpiRightX -= 4;
+                }
+
+                y += bannerH + 3;
+
+                // Key Highlights (with colored dot indicators)
+                const highlightsList = document.querySelector('#executive-summary-banner .exec-highlights-list');
                 if (highlightsList) {
                     const highlights = highlightsList.querySelectorAll('li');
                     if (highlights.length > 0) {
                         pdf.setTextColor(...rbcNavy);
                         pdf.setFontSize(8);
                         pdf.setFont('helvetica', 'bold');
-                        pdf.text('Key Highlights', margin, y + 2);
-                        y += 5;
+                        pdf.text('Key Highlights', margin + 2, y + 2);
+                        y += 6;
 
                         highlights.forEach(li => {
                             const text = sanitizeForPDF(li.textContent);
-                            if (text) {
-                                if (y > pageHeight - 15) y = addNewPage();
-                                pdf.setTextColor(...gray700);
-                                pdf.setFontSize(7);
-                                pdf.setFont('helvetica', 'normal');
-                                const lines = pdf.splitTextToSize('- ' + text, contentWidth - 6);
-                                lines.forEach(line => {
-                                    pdf.text(line, margin + 3, y);
-                                    y += 2.8;
-                                });
-                            }
+                            if (!text) return;
+                            if (y > pageHeight - 15) y = addNewPage();
+
+                            // Colored dot indicator
+                            let dotColor = [107, 114, 128]; // gray default
+                            if (li.classList.contains('highlight-good')) dotColor = [34, 197, 94];
+                            else if (li.classList.contains('highlight-warn')) dotColor = [234, 179, 8];
+                            else if (li.classList.contains('highlight-bad')) dotColor = [239, 68, 68];
+                            pdf.setFillColor(...dotColor);
+                            pdf.circle(margin + 4, y - 0.8, 1.2, 'F');
+
+                            // Text
+                            pdf.setTextColor(...gray700);
+                            pdf.setFontSize(7);
+                            pdf.setFont('helvetica', 'normal');
+                            const lines = pdf.splitTextToSize(text, contentWidth - 10);
+                            lines.forEach(line => {
+                                pdf.text(line, margin + 8, y);
+                                y += 3;
+                            });
+                            y += 1;
                         });
-                        y += 2;
+                        y += 1;
                     }
                 }
 

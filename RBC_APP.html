@@ -240,6 +240,41 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
 
+        /* KPI Filter Bar */
+        #kpi-filter-bar {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        #kpi-filter-bar .kpi-filter-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-right: 2px;
+        }
+        .kpi-pill {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1.5px solid var(--rbc-blue);
+            background: var(--rbc-blue);
+            color: white;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .kpi-pill.inactive {
+            background: white;
+            color: var(--rbc-blue);
+        }
+        .kpi-pill:hover {
+            opacity: 0.85;
+        }
+
         .kpi-label {
             font-size: 10px;
             font-weight: 600;
@@ -1542,6 +1577,10 @@
                             <div class="pacing-bar-target" id="pacing-bar-target" style="left: 0%;"></div>
                         </div>
                     </div>
+                </div>
+
+                <div id="kpi-filter-bar">
+                    <span class="kpi-filter-label">Show KPIs:</span>
                 </div>
 
                 <div class="kpi-grid">
@@ -2869,8 +2908,75 @@
             });
             document.getElementById('kpi-blended-container').innerHTML = blendedHtml;
 
+            renderKpiFilterBar();
+
             renderCharts(data);
             renderTable(data);
+        }
+
+        /**
+         * Render KPI filter bar — toggle pills to show/hide dashboard KPI cards
+         */
+        function renderKpiFilterBar() {
+            const bar = document.getElementById('kpi-filter-bar');
+            if (!bar) return;
+
+            // Collect all KPI cards and their keys
+            const grid = document.querySelector('.kpi-grid');
+            if (!grid) return;
+            const cards = grid.querySelectorAll('.kpi-card[data-kpi-key]');
+            const blendedCards = document.querySelectorAll('#kpi-blended-container .kpi-card');
+
+            // Build list: { key, label, element }
+            const kpiItems = [];
+            cards.forEach(c => {
+                const key = c.getAttribute('data-kpi-key');
+                const label = c.querySelector('.kpi-label')?.textContent || key;
+                kpiItems.push({ key, label, el: c });
+            });
+            blendedCards.forEach(c => {
+                const key = c.getAttribute('data-kpi-key') || c.querySelector('.kpi-label')?.textContent?.replace('Total ', '') || '';
+                if (!key) return;
+                c.setAttribute('data-kpi-key', key);
+                const label = c.querySelector('.kpi-label')?.textContent || key;
+                kpiItems.push({ key, label, el: c });
+            });
+
+            if (kpiItems.length === 0) return;
+
+            // Load saved state from localStorage
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem('rbc_kpi_filter') || '{}'); } catch(e) {}
+
+            // Build pills — keep the label span, replace everything after it
+            bar.innerHTML = '<span class="kpi-filter-label">Show KPIs:</span>';
+            kpiItems.forEach(item => {
+                const isActive = saved[item.key] !== false; // default ON
+                const pill = document.createElement('span');
+                pill.className = 'kpi-pill' + (isActive ? '' : ' inactive');
+                pill.textContent = item.label;
+                pill.setAttribute('data-filter-key', item.key);
+
+                // Apply initial visibility
+                item.el.style.display = isActive ? '' : 'none';
+
+                pill.addEventListener('click', () => {
+                    const isNowActive = pill.classList.toggle('inactive');
+                    // isNowActive is true when class was ADDED (meaning now inactive)
+                    const visible = !isNowActive;
+                    item.el.style.display = visible ? '' : 'none';
+
+                    // Save to localStorage
+                    let state = {};
+                    try { state = JSON.parse(localStorage.getItem('rbc_kpi_filter') || '{}'); } catch(e) {}
+                    state[item.key] = visible;
+                    localStorage.setItem('rbc_kpi_filter', JSON.stringify(state));
+                });
+
+                bar.appendChild(pill);
+            });
+
+            bar.style.display = 'flex';
         }
 
         /**
@@ -6736,17 +6842,20 @@
                 pdf.text('Key Performance Indicators', margin + halfWidth + 4, tableStartY);
                 
                 const kpiCards = document.querySelectorAll('#kpi-blended-container .kpi-card');
-                const kpiData = [
-                    ['Metric', 'Value'],
-                    ['Investment', document.getElementById('kpi-spend')?.textContent || '$0'],
-                    ['Impressions', document.getElementById('kpi-imps')?.textContent || '0'],
-                ];
+                const isVisible = (el) => el && el.style.display !== 'none';
+                const kpiData = [['Metric', 'Value']];
+                const investCard = document.querySelector('.kpi-card[data-kpi-key="investment"]');
+                if (isVisible(investCard)) kpiData.push(['Investment', document.getElementById('kpi-spend')?.textContent || '$0']);
+                const impsCard = document.querySelector('.kpi-card[data-kpi-key="impressions"]');
+                if (isVisible(impsCard)) kpiData.push(['Impressions', document.getElementById('kpi-imps')?.textContent || '0']);
                 kpiCards.forEach(card => {
+                    if (!isVisible(card)) return;
                     const label = card.querySelector('.kpi-label')?.textContent || '';
                     const value = card.querySelector('.kpi-value')?.textContent || '$0';
                     kpiData.push([label, value]);
                 });
-                kpiData.push(['Partners', document.getElementById('kpi-partners')?.textContent || '0']);
+                const partnersCard = document.querySelector('.kpi-card[data-kpi-key="partners"]');
+                if (isVisible(partnersCard)) kpiData.push(['Partners', document.getElementById('kpi-partners')?.textContent || '0']);
                 
                 pdf.autoTable({
                     startY: tableStartY + 2,

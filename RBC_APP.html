@@ -840,7 +840,156 @@
         .exec-highlights-list li.highlight-good::before { background: var(--success); }
         .exec-highlights-list li.highlight-warn::before { background: var(--warning); }
         .exec-highlights-list li.highlight-bad::before { background: var(--danger); }
+        .exec-highlights-list li.highlight-info::before { background: var(--rbc-blue); }
         .exec-highlights-list li strong { color: var(--gray-900); }
+
+        /* WOW Trends card on Insights tab */
+        #wow-trends-card .wow-content {
+            margin-top: 12px;
+        }
+        #wow-trends-card .wow-content table {
+            width: 100%;
+        }
+        .wow-week-selector-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .wow-week-selector-wrap label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #wow-week-select {
+            padding: 7px 28px 7px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--rbc-navy);
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23003168' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+        }
+        #wow-week-select:hover, #wow-week-select:focus {
+            border-color: var(--rbc-blue);
+            box-shadow: 0 0 0 3px rgba(0, 81, 165, 0.08);
+        }
+        .wow-comparison-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--rbc-navy);
+            padding: 8px 12px;
+            background: var(--gray-50);
+            border-left: 3px solid var(--rbc-blue);
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+        .wow-comparison-header strong { color: var(--rbc-blue); }
+
+        /* Exec edit-actions toolbar (header buttons) */
+        .exec-header-actions {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .exec-edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--rbc-blue);
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .exec-edit-btn:hover { background: var(--gray-50); border-color: var(--rbc-blue); }
+        .exec-edit-btn .pencil-icon {
+            color: var(--rbc-orange, #ee6f1c);
+            font-size: 12px;
+        }
+
+        /* Highlights modal — extends notes-modal styling */
+        .hl-modal-reset-btn {
+            margin-right: auto;
+            padding: 7px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-600);
+            background: transparent;
+            border: 1px dashed var(--gray-300);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .hl-modal-reset-btn:hover {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.06);
+        }
+        .hl-modal-helper {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-100);
+            line-height: 1.5;
+        }
+
+        /* Rich-text editor for highlights (renders <strong> as bold, not as raw tags) */
+        .hl-text-editor {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: var(--gray-700);
+            line-height: 1.5;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+            min-height: 36px;
+            cursor: text;
+            word-break: break-word;
+        }
+        .hl-text-editor:hover { border-color: var(--gray-300); }
+        .hl-text-editor:focus {
+            border-color: var(--rbc-blue);
+            box-shadow: 0 0 0 3px rgba(0, 81, 165, 0.08);
+        }
+        .hl-text-editor strong, .hl-text-editor b { color: var(--gray-900); font-weight: 700; }
+        .hl-text-editor em, .hl-text-editor i { font-style: italic; }
+        .hl-text-editor.is-empty::before {
+            content: attr(data-placeholder);
+            color: var(--gray-400);
+            font-style: italic;
+            pointer-events: none;
+        }
+        /* Keep the row layout consistent when editor wraps to multiple lines */
+        .hl-item-row {
+            align-items: flex-start !important;
+        }
+        .hl-item-row .notes-color-picker,
+        .hl-item-row .notes-remove-btn {
+            margin-top: 6px;
+        }
         /* (KPI mini cards removed — stats now inline in header) */
         .exec-notes-saved { margin-top: 6px; }
         .exec-notes-saved:empty { display: none; }
@@ -2039,7 +2188,7 @@
                             <button class="quick-btn" onclick="askQuestion('Which partners have the highest CPM and should I be concerned?')">Are any CPMs too high?</button>
                             <button class="quick-btn" onclick="askQuestion('How is my spend distributed across media types?')">Spend by media type</button>
                             <button class="quick-btn" onclick="askQuestion('Break down my campaign performance by Line of Business')">Performance by LOB</button>
-                            <button class="quick-btn" onclick="askQuestion('What are the WOW results for main KPIs?')">Week-over-week trends</button>
+                            <button class="quick-btn" onclick="askQuestion('What were the biggest week-over-week variances this period?')">Biggest WOW variances</button>
                             <button class="quick-btn" onclick="askQuestion('Which week was the best performing week?')">Best performing week</button>
                             <button class="quick-btn" onclick="askQuestion('What partners have generated the most app completes?')">Top partners by app completes</button>
                             <button class="quick-btn" onclick="askQuestion('What video partners have the highest VCR%?')">Highest video completion rates</button>
@@ -3992,6 +4141,103 @@
         // Executive Summary Banner
         // ============================================
 
+        // Generates the auto-derived highlights array from current data.
+        // Pure function — no DOM side effects. Returns [{type, text}, ...].
+        function generateAutoExecHighlights() {
+            if (!filteredPartners || filteredPartners.length === 0) return [];
+            const ctx = dataContext;
+            const highlights = [];
+
+            function getPartnerKPILabel(p) {
+                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || null;
+                if (kpi) {
+                    const kl = kpi.toLowerCase();
+                    if (kl.includes('viewable') && kl.includes('cpm')) return 'eCPM';
+                    if (kl === 'cpm') return 'CPM';
+                    if (kl === 'ecpm') return 'eCPM';
+                    if (kl === 'cpc') return 'CPC';
+                    if (kl === 'cpcv') return 'CPCV';
+                    if (kl === 'cple' || kl === 'cplpe') return 'CPLE';
+                    if (kl === 'cpa') return 'CPA';
+                    if (kl === 'dooh') return 'eCPM';
+                    return kpi;
+                }
+                return 'CPM';
+            }
+            function getPartnerKPIValue(p) {
+                const label = getPartnerKPILabel(p);
+                switch (label) {
+                    case 'eCPM': return p.viewableEcpm || p.cpm || p.ecpm || 0;
+                    case 'CPM': return p.ecpm || p.cpm || 0;
+                    case 'CPC': return p.cpc || 0;
+                    case 'CPCV': return p.cpcv || 0;
+                    case 'CPLE': return p.cple || p.cpm || p.ecpm || 0;
+                    default: return p.ecpm || p.cpm || 0;
+                }
+            }
+
+            // Best performer
+            const sorted = [...filteredPartners]
+                .filter(p => getPartnerKPIValue(p) > 0)
+                .sort((a, b) => getPartnerKPIValue(a) - getPartnerKPIValue(b));
+            const bestPartner = sorted[0];
+            if (bestPartner && sorted.length > 1) {
+                const bestKPILabel = getPartnerKPILabel(bestPartner);
+                const bestKPIValue = getPartnerKPIValue(bestPartner);
+                highlights.push({
+                    type: 'good',
+                    text: `<strong>${bestPartner.partner}</strong> is the most cost-efficient partner at <strong>$${bestKPIValue.toFixed(2)}</strong> ${bestKPILabel} (${bestPartner.mediaType}).`
+                });
+            }
+
+            // Benchmark analysis
+            const overBMPartners = [];
+            const starPartners = [];
+            filteredPartners.forEach(p => {
+                const bm = getBenchmarkForMediaType(p.mediaType, p.partner);
+                if (!bm) return;
+                const kpiLabel = getPartnerKPILabel(p);
+                let actualVal, bmVal;
+                switch (kpiLabel) {
+                    case 'CPC': actualVal = p.cpc || 0; bmVal = bm.cpc; break;
+                    case 'CPCV': actualVal = p.cpcv || 0; bmVal = bm.vcr; break;
+                    case 'CPLE': actualVal = p.cple || p.cpm || p.ecpm || 0; bmVal = bm.cpm; break;
+                    default: actualVal = p.cpm || 0; bmVal = bm.cpm; break;
+                }
+                if (bmVal === null || bmVal === undefined || bmVal === 0 || actualVal === 0) return;
+                const variance = ((actualVal - bmVal) / bmVal) * 100;
+                if (variance < -5) starPartners.push({ name: p.partner, variance });
+                else if (variance > (bm.variance || 15)) overBMPartners.push({ name: p.partner, variance });
+            });
+
+            if (starPartners.length > 0) {
+                starPartners.sort((a, b) => a.variance - b.variance);
+                const topStars = starPartners.slice(0, 3).map(s => `<strong>${s.name}</strong> (${Math.abs(s.variance).toFixed(0)}% under)`).join(', ');
+                highlights.push({ type: 'good', text: `Performing efficiently vs benchmarks: ${topStars}.` });
+            }
+            if (overBMPartners.length > 0) {
+                overBMPartners.sort((a, b) => b.variance - a.variance);
+                const topOver = overBMPartners.slice(0, 3).map(s => `<strong>${s.name}</strong> (+${s.variance.toFixed(0)}%)`).join(', ');
+                highlights.push({ type: 'bad', text: `Exceeding benchmarks: ${topOver}. Review delivery and optimization.` });
+            }
+
+            // Spend concentration
+            if (ctx.topPartners.length > 0) {
+                const topPct = ((ctx.topPartners[0].spend / ctx.totalSpend) * 100).toFixed(0);
+                if (topPct > 30) {
+                    highlights.push({ type: 'warn', text: `<strong>${ctx.topPartners[0].partner}</strong> accounts for <strong>${topPct}%</strong> of total spend.` });
+                }
+            }
+
+            // Delivery summary
+            highlights.push({
+                type: 'good',
+                text: `Campaign has delivered <strong>${(ctx.totalImps / 1e6).toFixed(1)}M</strong> impressions across <strong>${ctx.partnerCount}</strong> partners and <strong>${ctx.mediaTypes.length}</strong> media types.`
+            });
+
+            return highlights;
+        }
+
         function renderExecutiveSummary() {
             const container = document.getElementById('executive-summary-banner');
             if (!filteredPartners || filteredPartners.length === 0) {
@@ -4010,105 +4256,11 @@
             }
 
             // Generate auto-insights based on actual data
-            const highlights = [];
+            const highlights = generateAutoExecHighlights();
 
-            // Helper: get KPI label for a partner
-            function getPartnerKPILabel(p) {
-                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || null;
-                if (kpi) {
-                    const kl = kpi.toLowerCase();
-                    if (kl.includes('viewable') && kl.includes('cpm')) return 'eCPM';
-                    if (kl === 'cpm') return 'CPM';
-                    if (kl === 'ecpm') return 'eCPM';
-                    if (kl === 'cpc') return 'CPC';
-                    if (kl === 'cpcv') return 'CPCV';
-                    if (kl === 'cple' || kl === 'cplpe') return 'CPLE';
-                    if (kl === 'cpa') return 'CPA';
-                    if (kl === 'dooh') return 'eCPM';
-                    return kpi;
-                }
-                return 'CPM';
-            }
-
-            // Helper: get KPI value for a partner
-            function getPartnerKPIValue(p) {
-                const label = getPartnerKPILabel(p);
-                switch (label) {
-                    case 'eCPM': return p.viewableEcpm || p.cpm || p.ecpm || 0;
-                    case 'CPM': return p.ecpm || p.cpm || 0;
-                    case 'CPC': return p.cpc || 0;
-                    case 'CPCV': return p.cpcv || 0;
-                    case 'CPLE': return p.cple || p.cpm || p.ecpm || 0;
-                    default: return p.ecpm || p.cpm || 0;
-                }
-            }
-
-            // Find best performer (lowest KPI value = most cost-efficient)
-            const sorted = [...filteredPartners]
-                .filter(p => getPartnerKPIValue(p) > 0)
-                .sort((a, b) => getPartnerKPIValue(a) - getPartnerKPIValue(b));
-            const bestPartner = sorted[0];
-            if (bestPartner && sorted.length > 1) {
-                const bestKPILabel = getPartnerKPILabel(bestPartner);
-                const bestKPIValue = getPartnerKPIValue(bestPartner);
-                highlights.push({
-                    type: 'good',
-                    text: `<strong>${bestPartner.partner}</strong> is the most cost-efficient partner at <strong>$${bestKPIValue.toFixed(2)}</strong> ${bestKPILabel} (${bestPartner.mediaType}).`
-                });
-            }
-
-            // Benchmark analysis
-            const overBMPartners = [];
-            const starPartners = [];
-
-            filteredPartners.forEach(p => {
-                const bm = getBenchmarkForMediaType(p.mediaType, p.partner);
-                if (!bm) return;
-
-                // Use the right benchmark field based on partner's KPI
-                const kpiLabel = getPartnerKPILabel(p);
-                let actualVal, bmVal;
-                switch (kpiLabel) {
-                    case 'CPC': actualVal = p.cpc || 0; bmVal = bm.cpc; break;
-                    case 'CPCV': actualVal = p.cpcv || 0; bmVal = bm.vcr; break;
-                    case 'CPLE': actualVal = p.cple || p.cpm || p.ecpm || 0; bmVal = bm.cpm; break;
-                    default: actualVal = p.cpm || 0; bmVal = bm.cpm; break;
-                }
-
-                if (bmVal === null || bmVal === undefined || bmVal === 0 || actualVal === 0) return;
-                const variance = ((actualVal - bmVal) / bmVal) * 100;
-                if (variance < -5) {
-                    starPartners.push({ name: p.partner, variance });
-                } else if (variance > (bm.variance || 15)) {
-                    overBMPartners.push({ name: p.partner, variance });
-                }
-            });
-
-            if (starPartners.length > 0) {
-                starPartners.sort((a, b) => a.variance - b.variance);
-                const topStars = starPartners.slice(0, 3).map(s => `<strong>${s.name}</strong> (${Math.abs(s.variance).toFixed(0)}% under)`).join(', ');
-                highlights.push({ type: 'good', text: `Performing efficiently vs benchmarks: ${topStars}.` });
-            }
-
-            if (overBMPartners.length > 0) {
-                overBMPartners.sort((a, b) => b.variance - a.variance);
-                const topOver = overBMPartners.slice(0, 3).map(s => `<strong>${s.name}</strong> (+${s.variance.toFixed(0)}%)`).join(', ');
-                highlights.push({ type: 'bad', text: `Exceeding benchmarks: ${topOver}. Review delivery and optimization.` });
-            }
-
-            // Spend concentration insight
-            if (ctx.topPartners.length > 0) {
-                const topPct = ((ctx.topPartners[0].spend / ctx.totalSpend) * 100).toFixed(0);
-                if (topPct > 30) {
-                    highlights.push({ type: 'warn', text: `<strong>${ctx.topPartners[0].partner}</strong> accounts for <strong>${topPct}%</strong> of total spend.` });
-                }
-            }
-
-            // Delivery summary
-            highlights.push({
-                type: 'good',
-                text: `Campaign has delivered <strong>${(ctx.totalImps / 1e6).toFixed(1)}M</strong> impressions across <strong>${ctx.partnerCount}</strong> partners and <strong>${ctx.mediaTypes.length}</strong> media types.`
-            });
+            // Load saved (edited) highlights, fall back to auto-generated
+            const savedHighlights = getSavedExecHighlights();
+            const displayHighlights = (savedHighlights && savedHighlights.length > 0) ? savedHighlights : highlights;
 
             let html = `<div class="exec-banner">`;
 
@@ -4140,35 +4292,17 @@
                 </div>
             </div>`;
 
-            // Body — full-width highlights with edit notes button
-            const noteKey = 'rbc_exec_notes_' + (campaigns[0]?.name || 'default');
-            let savedNotesArr = [];
-            try { savedNotesArr = JSON.parse(localStorage.getItem(noteKey) || '[]'); } catch(e) {
-                // Migrate old plain-text format to new JSON format
-                const old = localStorage.getItem(noteKey) || '';
-                if (old) {
-                    savedNotesArr = old.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').split('\n').filter(t => t.trim()).map(t => ({ text: t.trim(), color: 'blue' }));
-                    localStorage.setItem(noteKey, JSON.stringify(savedNotesArr));
-                }
-            }
-            const hasNotes = savedNotesArr.length > 0;
-            const colorToClass = { blue: '', good: 'highlight-good', warn: 'highlight-warn', bad: 'highlight-bad' };
-            const notesDisplayHTML = hasNotes
-                ? `<div class="exec-highlights-title" style="margin-top:4px;">📝 Notes</div>
-                   <ul class="exec-highlights-list" style="margin:0;">
-                       ${savedNotesArr.map(n => `<li class="${colorToClass[n.color] || ''}">${n.text}</li>`).join('')}
-                   </ul>`
-                : '';
-
+            // Body — full-width highlights with edit button
             html += `<div class="exec-banner-body" style="padding:14px 20px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                     <div class="exec-highlights-title" style="margin-bottom:0;">📌 Key Highlights</div>
-                    <button class="exec-notes-btn" onclick="openNotesModal()">✏️ ${hasNotes ? 'Edit Notes' : 'Add Notes'}</button>
+                    <div class="exec-header-actions">
+                        <button class="exec-edit-btn" onclick="openHighlightsModal()" title="Edit highlights"><span class="pencil-icon">✏️</span> Edit Highlights</button>
+                    </div>
                 </div>
-                <ul class="exec-highlights-list" style="margin:0;">
-                    ${highlights.map(h => `<li class="highlight-${h.type}">${h.text}</li>`).join('')}
+                <ul class="exec-highlights-list" id="exec-highlights-list" style="margin:0;">
+                    ${displayHighlights.map(h => `<li class="highlight-${h.type}">${h.text}</li>`).join('')}
                 </ul>
-                <div class="exec-notes-saved" id="exec-notes-display">${notesDisplayHTML}</div>
             </div>`;
 
             html += `</div>`;
@@ -4191,8 +4325,199 @@
                 </div>
             </div>`;
 
+            // Highlights edit modal
+            html += `<div class="notes-modal-overlay" id="highlights-modal-overlay">
+                <div class="notes-modal" style="width:640px;">
+                    <div class="notes-modal-header">
+                        <h4>Edit Key Highlights</h4>
+                        <button class="notes-modal-close" onclick="closeHighlightsModal()">&times;</button>
+                    </div>
+                    <div class="notes-modal-body">
+                        <div class="hl-modal-helper">
+                            Edit, reorder, or remove highlights. Pick a status color (blue = info, green = positive, amber = caution, red = needs review). Use Reset to restore auto-generated highlights from your data.
+                        </div>
+                        <div id="highlights-items-list"></div>
+                        <button class="notes-add-row" onclick="addHighlightRow()">+ Add Highlight</button>
+                    </div>
+                    <div class="notes-modal-footer">
+                        <button class="hl-modal-reset-btn" onclick="resetHighlightsInModal()" title="Restore auto-generated highlights">🔄 Reset to Auto-Generated</button>
+                        <button class="notes-btn-cancel" onclick="closeHighlightsModal()">Cancel</button>
+                        <button class="notes-btn-save" onclick="saveHighlightsModal()">Save Highlights</button>
+                    </div>
+                </div>
+            </div>`;
+
             container.innerHTML = html;
         }
+
+        // ============================================
+        // Editable Executive Summary Highlights (Modal)
+        // ============================================
+        const HIGHLIGHT_COLORS = [
+            { id: 'info', color: 'var(--rbc-blue)', label: 'Info' },
+            { id: 'good', color: 'var(--success)', label: 'Positive' },
+            { id: 'warn', color: 'var(--warning)', label: 'Caution' },
+            { id: 'bad',  color: 'var(--danger)',  label: 'Needs Review' }
+        ];
+
+        function getExecHighlightsKey() {
+            return 'rbc_exec_highlights_' + (campaigns[0]?.name || 'default');
+        }
+
+        function getSavedExecHighlights() {
+            try {
+                return JSON.parse(localStorage.getItem(getExecHighlightsKey()) || 'null');
+            } catch (e) { return null; }
+        }
+
+        // Build a single highlight row for the modal
+        function buildHighlightRowHTML(text, colorId) {
+            const cid = colorId || 'info';
+            const dots = HIGHLIGHT_COLORS.map(c =>
+                `<span class="notes-color-dot ${c.id === cid ? 'active' : ''}" style="background:${c.color};" data-color="${c.id}" title="${c.label}" onclick="selectHighlightColor(this)"></span>`
+            ).join('');
+            // Render the text as HTML (so <strong> tags display as bold) inside a contenteditable div
+            // sanitizeHighlightHTML strips dangerous tags but preserves <strong>, <em>, <b>, <i>
+            const safe = sanitizeHighlightHTML(text || '');
+            return `<div class="notes-item-row hl-item-row">
+                <div class="notes-color-picker">${dots}</div>
+                <div class="hl-text-editor" contenteditable="true" data-placeholder="Type a highlight…" oninput="onHighlightInput(this)" onpaste="onHighlightPaste(event)">${safe}</div>
+                <button class="notes-remove-btn" onclick="this.closest('.notes-item-row').remove()" title="Remove">×</button>
+            </div>`;
+        }
+
+        // Strips disallowed HTML; keeps <strong>, <em>, <b>, <i> for inline emphasis
+        function sanitizeHighlightHTML(html) {
+            if (!html) return '';
+            // Use a temp container to leverage browser parsing, then clean
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            const ALLOWED = new Set(['STRONG', 'EM', 'B', 'I']);
+
+            function clean(node) {
+                const children = Array.from(node.childNodes);
+                children.forEach(child => {
+                    if (child.nodeType === 1) { // Element
+                        if (!ALLOWED.has(child.tagName)) {
+                            // Replace element with its text content
+                            const text = document.createTextNode(child.textContent);
+                            node.replaceChild(text, child);
+                        } else {
+                            // Strip all attributes
+                            Array.from(child.attributes).forEach(a => child.removeAttribute(a.name));
+                            clean(child);
+                        }
+                    } else if (child.nodeType === 8) { // Comment
+                        node.removeChild(child);
+                    }
+                });
+            }
+            clean(tmp);
+            return tmp.innerHTML;
+        }
+
+        function onHighlightInput(el) {
+            // Toggle empty state for placeholder display
+            if (!el.textContent.trim()) {
+                el.classList.add('is-empty');
+            } else {
+                el.classList.remove('is-empty');
+            }
+        }
+
+        // Strip formatting on paste so users don't bring in styled spans/colors
+        function onHighlightPaste(e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+            document.execCommand('insertText', false, text);
+        }
+
+        function selectHighlightColor(dot) {
+            const row = dot.closest('.notes-item-row');
+            row.querySelectorAll('.notes-color-dot').forEach(d => d.classList.remove('active'));
+            dot.classList.add('active');
+        }
+
+        function addHighlightRow(text, colorId) {
+            const list = document.getElementById('highlights-items-list');
+            if (!list) return;
+            list.insertAdjacentHTML('beforeend', buildHighlightRowHTML(text || '', colorId || 'info'));
+            const row = list.lastElementChild;
+            const editor = row.querySelector('.hl-text-editor');
+            if (editor) {
+                onHighlightInput(editor); // set initial empty state
+                if (!text) editor.focus();
+                editor.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        addHighlightRow('', 'info');
+                    }
+                });
+            }
+        }
+
+        function openHighlightsModal() {
+            const list = document.getElementById('highlights-items-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            // Use saved if it exists, otherwise capture current auto-generated
+            let items = getSavedExecHighlights();
+            if (!items || items.length === 0) {
+                items = generateAutoExecHighlights();
+            }
+
+            if (items.length === 0) {
+                addHighlightRow('', 'info');
+            } else {
+                items.forEach(h => addHighlightRow(h.text, h.type));
+            }
+
+            document.getElementById('highlights-modal-overlay').classList.add('active');
+            setTimeout(() => { const ed = list.querySelector('.hl-text-editor'); if (ed) ed.focus(); }, 100);
+        }
+
+        function closeHighlightsModal() {
+            document.getElementById('highlights-modal-overlay').classList.remove('active');
+        }
+
+        function resetHighlightsInModal() {
+            if (!confirm('Replace the rows below with auto-generated highlights from your data? Unsaved edits in this modal will be lost.')) return;
+            const list = document.getElementById('highlights-items-list');
+            if (!list) return;
+            const auto = generateAutoExecHighlights();
+            list.innerHTML = '';
+            if (auto.length === 0) {
+                addHighlightRow('', 'info');
+            } else {
+                auto.forEach(h => addHighlightRow(h.text, h.type));
+            }
+        }
+
+        function saveHighlightsModal() {
+            const list = document.getElementById('highlights-items-list');
+            const rows = list ? list.querySelectorAll('.notes-item-row') : [];
+            const items = [];
+            rows.forEach(row => {
+                const editor = row.querySelector('.hl-text-editor');
+                if (!editor) return;
+                // Sanitize to strip any pasted-in dangerous markup; keep <strong>/<em>/<b>/<i>
+                const text = sanitizeHighlightHTML(editor.innerHTML.trim());
+                if (!text || !editor.textContent.trim()) return;
+                const activeDot = row.querySelector('.notes-color-dot.active');
+                const type = activeDot ? activeDot.dataset.color : 'info';
+                items.push({ type, text });
+            });
+
+            localStorage.setItem(getExecHighlightsKey(), JSON.stringify(items));
+            closeHighlightsModal();
+            renderExecutiveSummary();
+        }
+
+        // Close highlights modal when clicking on the overlay
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'highlights-modal-overlay') closeHighlightsModal();
+        });
 
         const NOTE_COLORS = [
             { id: 'blue', color: 'var(--rbc-blue)', css: 'highlight-info' },
@@ -4522,6 +4847,48 @@
             const ctx = dataContext;
             let html = '';
 
+            // Week-over-Week Trends with week selector
+            const wowWeeks = getActiveWeekKeys();
+            let wowCardBody, wowSelectorHtml = '';
+            if (wowWeeks.length < 2) {
+                wowCardBody = `<div style="padding:24px; text-align:center; background:var(--gray-50); border-radius:8px; margin-top:12px;">
+                    <div style="font-size:28px; margin-bottom:6px;">📅</div>
+                    <p style="font-size:13px; color:var(--gray-700); margin:0 0 4px 0;"><strong>Need at least 2 weeks of data</strong></p>
+                    <p style="font-size:11px; color:var(--gray-500); margin:0;">Currently ${wowWeeks.length} week${wowWeeks.length === 1 ? '' : 's'} with non-zero activity. Upload a report spanning multiple weeks to enable comparison.</p>
+                </div>`;
+            } else {
+                // Default to most recent comparison
+                const defaultKey = wowWeeks[wowWeeks.length - 1];
+                // Build options: show pairs newest-first; only weeks with a prior week (skip index 0)
+                const options = wowWeeks
+                    .map((k, i) => ({ k, i }))
+                    .filter(o => o.i >= 1)
+                    .reverse()
+                    .map(o => {
+                        const sel = o.k === defaultKey ? 'selected' : '';
+                        return `<option value="${o.k}" ${sel}>${_wowShortLabel(o.k)} vs ${_wowShortLabel(wowWeeks[o.i - 1])}</option>`;
+                    }).join('');
+                wowSelectorHtml = `<div class="wow-week-selector-wrap">
+                    <label for="wow-week-select">Compare:</label>
+                    <select id="wow-week-select" onchange="onWOWWeekChange(this.value)">${options}</select>
+                </div>`;
+                wowCardBody = computeWOWHtml(defaultKey);
+            }
+
+            html += `
+                <div class="insight-card full-width" id="wow-trends-card">
+                    <div class="insight-header" style="align-items:center;">
+                        <div class="insight-icon info">📊</div>
+                        <div style="flex:1;">
+                            <div class="insight-title">Week-over-Week Trends</div>
+                            <div class="insight-subtitle">Compare performance changes between weeks, by partner and KPI</div>
+                        </div>
+                        ${wowSelectorHtml}
+                    </div>
+                    <div class="wow-content" id="wow-content-body">${wowCardBody}</div>
+                </div>
+            `;
+
             // Recommendations - Editable
             html += `
                 <div class="insight-card full-width" id="recommendations-card">
@@ -4694,6 +5061,383 @@
             if (typing) typing.remove();
         }
 
+        // ============================================
+        // Shared Week-over-Week helpers
+        // (used by both Insights tab card and AI Assistant)
+        // ============================================
+        function _wowShortLabel(lbl) {
+            const m = lbl && lbl.match(/^(\w+)\s+(\d+)/);
+            return m ? m[1].substring(0, 3) + ' ' + m[2] : lbl;
+        }
+
+        function _wowSortKeys(keys) {
+            return keys.slice().sort((a, b) => {
+                const da = new Date(a);
+                const db = new Date(b);
+                if (!isNaN(da) && !isNaN(db)) return da - db;
+                const wa = a.match(/Week\s*(\d+)/i);
+                const wb = b.match(/Week\s*(\d+)/i);
+                if (wa && wb) return parseInt(wa[1]) - parseInt(wb[1]);
+                return a.localeCompare(b);
+            });
+        }
+
+        // Returns chronologically sorted week keys that have non-zero data
+        function getActiveWeekKeys() {
+            const activePartners = (allPartners || []).filter(p =>
+                p.spend > 0 && p.mediaType && p.mediaType.toLowerCase() !== 'total'
+            );
+            const totals = {};
+            activePartners.forEach(p => {
+                if (p.weeklyMetrics) {
+                    Object.entries(p.weeklyMetrics).forEach(([k, v]) => {
+                        if (!totals[k]) totals[k] = { spend: 0, impressions: 0 };
+                        totals[k].spend += v.spend || 0;
+                        totals[k].impressions += v.impressions || 0;
+                    });
+                }
+            });
+            const keys = Object.keys(totals).filter(k =>
+                totals[k].spend > 0 || totals[k].impressions > 0
+            );
+            return _wowSortKeys(keys);
+        }
+
+        // Returns structured WOW data for currentWeekKey vs the prior active week.
+        // Returns null when comparison isn't possible.
+        function _computeWOWData(currentWeekKey) {
+            const allWeekKeys = getActiveWeekKeys();
+            const idx = allWeekKeys.indexOf(currentWeekKey);
+            if (idx < 1) return null;
+            const previousWeekKey = allWeekKeys[idx - 1];
+
+            const activePartners = allPartners.filter(p =>
+                p.spend > 0 && p.mediaType && p.mediaType.toLowerCase() !== 'total'
+            );
+
+            function computePartnerKPI(p, spend, impressions) {
+                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || '';
+                const kl = kpi.toLowerCase();
+                if (kl.includes('cpc') && !kl.includes('cpcv')) {
+                    if (p.clicks > 0 && p.impressions > 0) {
+                        const ctr = p.clicks / p.impressions;
+                        const estClicks = impressions * ctr;
+                        return estClicks > 0 ? spend / estClicks : 0;
+                    }
+                    return 0;
+                }
+                if (kl === 'cpcv') {
+                    if (p.completeViews > 0 && p.impressions > 0) {
+                        const cvRate = p.completeViews / p.impressions;
+                        const estCV = impressions * cvRate;
+                        return estCV > 0 ? spend / estCV : 0;
+                    }
+                    return 0;
+                }
+                if (kl === 'cple' || kl === 'cplpe') {
+                    return impressions > 0 ? spend / impressions * 1000 : 0;
+                }
+                return impressions > 0 ? spend / impressions * 1000 : 0;
+            }
+
+            function getKPITypeLabel(p) {
+                const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || '';
+                const kl = kpi.toLowerCase();
+                if (kl.includes('viewable') && kl.includes('cpm')) return 'eCPM';
+                if (kl === 'ecpm') return 'eCPM';
+                if (kl === 'cpm') return 'CPM';
+                if (kl === 'cpc') return 'CPC';
+                if (kl === 'cpcv') return 'CPCV';
+                if (kl === 'cple' || kl === 'cplpe') return 'CPLE';
+                if (kl === 'dooh') return 'eCPM';
+                return 'CPM';
+            }
+
+            const costMetrics = ['eCPM', 'CPM', 'CPC', 'CPCV', 'CPLE', 'CPA'];
+            const partnerRows = [];
+            const kpiGroups = {};
+            let totalCurrSpend = 0, totalPrevSpend = 0, totalCurrImps = 0, totalPrevImps = 0;
+
+            activePartners.forEach(p => {
+                if (!p.weeklyMetrics) return;
+                const curr = p.weeklyMetrics[currentWeekKey];
+                const prev = p.weeklyMetrics[previousWeekKey];
+                if (!curr && !prev) return;
+
+                const currSpend = curr ? curr.spend : 0;
+                const prevSpend = prev ? prev.spend : 0;
+                const currImps = curr ? curr.impressions : 0;
+                const prevImps = prev ? prev.impressions : 0;
+
+                totalCurrSpend += currSpend;
+                totalPrevSpend += prevSpend;
+                totalCurrImps += currImps;
+                totalPrevImps += prevImps;
+
+                const currKPI = computePartnerKPI(p, currSpend, currImps);
+                const prevKPI = computePartnerKPI(p, prevSpend, prevImps);
+                const kpiLabel = getKPITypeLabel(p);
+
+                let wowPct = null;
+                if (prevKPI > 0 && currKPI > 0) {
+                    wowPct = ((currKPI - prevKPI) / prevKPI) * 100;
+                }
+                let spendWowPct = null;
+                if (prevSpend > 0) spendWowPct = ((currSpend - prevSpend) / prevSpend) * 100;
+
+                partnerRows.push({
+                    partner: p.partner, mediaType: p.mediaType, kpiLabel,
+                    currKPI, prevKPI, wowPct,
+                    currSpend, prevSpend, spendWowPct,
+                    currImps, prevImps
+                });
+
+                if (!kpiGroups[kpiLabel]) {
+                    kpiGroups[kpiLabel] = { currSpend: 0, prevSpend: 0, currImps: 0, prevImps: 0, count: 0 };
+                }
+                kpiGroups[kpiLabel].currSpend += currSpend;
+                kpiGroups[kpiLabel].prevSpend += prevSpend;
+                kpiGroups[kpiLabel].currImps += currImps;
+                kpiGroups[kpiLabel].prevImps += prevImps;
+                kpiGroups[kpiLabel].count++;
+            });
+
+            partnerRows.sort((a, b) => Math.abs(b.wowPct || 0) - Math.abs(a.wowPct || 0));
+
+            const spendWow = totalPrevSpend > 0 ? ((totalCurrSpend - totalPrevSpend) / totalPrevSpend * 100) : null;
+            const impsWow = totalPrevImps > 0 ? ((totalCurrImps - totalPrevImps) / totalPrevImps * 100) : null;
+
+            return {
+                currentWeekKey, previousWeekKey,
+                currentWeekLabel: _wowShortLabel(currentWeekKey),
+                previousWeekLabel: _wowShortLabel(previousWeekKey),
+                partnerRows, kpiGroups, costMetrics,
+                totals: {
+                    currSpend: totalCurrSpend, prevSpend: totalPrevSpend,
+                    currImps: totalCurrImps, prevImps: totalPrevImps,
+                    spendWow, impsWow
+                }
+            };
+        }
+
+        // Returns HTML for cards + table comparing currentWeekKey vs the immediately prior week.
+        // Returns an empty-state string if comparison isn't possible.
+        function computeWOWHtml(currentWeekKey) {
+            const data = _computeWOWData(currentWeekKey);
+            if (!data) {
+                return `<p style="padding:20px; text-align:center; color:var(--gray-500); font-size:12px;">
+                    No prior week available to compare against.
+                </p>`;
+            }
+            const { currentWeekLabel, previousWeekLabel, partnerRows, kpiGroups, costMetrics, totals } = data;
+
+            // KPI summary cards
+            let cardsHtml = '';
+            Object.entries(kpiGroups).forEach(([kpiLabel, grp]) => {
+                const currVal = grp.currImps > 0 ? grp.currSpend / grp.currImps * 1000 : 0;
+                const prevVal = grp.prevImps > 0 ? grp.prevSpend / grp.prevImps * 1000 : 0;
+
+                let wowPct = prevVal > 0 ? ((currVal - prevVal) / prevVal) * 100 : null;
+                const isCost = costMetrics.includes(kpiLabel);
+                let wowColor = '#6b7280';
+                let wowText = '--';
+
+                if (wowPct !== null) {
+                    if (isCost) {
+                        wowColor = wowPct <= 0 ? '#059669' : '#dc2626';
+                        const ind = wowPct <= 0 ? '▼' : '▲';
+                        wowText = `${ind} ${wowPct > 0 ? '+' : ''}${wowPct.toFixed(1)}% ${wowPct <= 0 ? '(improvement)' : '(increase)'}`;
+                    } else {
+                        wowColor = wowPct >= 0 ? '#059669' : '#dc2626';
+                        const ind = wowPct >= 0 ? '▲' : '▼';
+                        wowText = `${ind} ${wowPct > 0 ? '+' : ''}${wowPct.toFixed(1)}%`;
+                    }
+                }
+
+                cardsHtml += `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid ${wowColor};">
+                    <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">${kpiLabel} (Blended)</div>
+                    <div style="font-size:18px; font-weight:700; margin:4px 0;">$${currVal.toFixed(2)}</div>
+                    <div style="font-size:11px; color:#6b7280;">Previous: $${prevVal.toFixed(2)}</div>
+                    <div style="font-size:11px; color:${wowColor}; font-weight:600;">${wowText}</div>
+                </div>`;
+            });
+
+            const spendCardHtml = `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid #003168;">
+                <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Total Spend</div>
+                <div style="font-size:18px; font-weight:700; margin:4px 0;">${formatCurrency(totals.currSpend)}</div>
+                <div style="font-size:11px; color:#6b7280;">Previous: ${formatCurrency(totals.prevSpend)}</div>
+                <div style="font-size:11px; color:#6b7280; font-weight:600;">${totals.spendWow !== null ? (totals.spendWow >= 0 ? '▲ +' : '▼ ') + totals.spendWow.toFixed(1) + '%' : '--'}</div>
+            </div>`;
+            const impsCardHtml = `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid #003168;">
+                <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Impressions</div>
+                <div style="font-size:18px; font-weight:700; margin:4px 0;">${(totals.currImps/1e6).toFixed(2)}M</div>
+                <div style="font-size:11px; color:#6b7280;">Previous: ${(totals.prevImps/1e6).toFixed(2)}M</div>
+                <div style="font-size:11px; color:#6b7280; font-weight:600;">${totals.impsWow !== null ? (totals.impsWow >= 0 ? '▲ +' : '▼ ') + totals.impsWow.toFixed(1) + '%' : '--'}</div>
+            </div>`;
+
+            // Partner detail table
+            let tableRows = '';
+            partnerRows.forEach(r => {
+                const isCost = costMetrics.includes(r.kpiLabel);
+                let wowCell = '--';
+                let wowStyle = 'color:#6b7280;';
+
+                if (r.wowPct !== null) {
+                    if (isCost) {
+                        wowStyle = r.wowPct <= 0 ? 'color:#059669; font-weight:600;' : 'color:#dc2626; font-weight:600;';
+                    } else {
+                        wowStyle = r.wowPct >= 0 ? 'color:#059669; font-weight:600;' : 'color:#dc2626; font-weight:600;';
+                    }
+                    const arrow = r.wowPct >= 0 ? '▲' : '▼';
+                    wowCell = `${arrow} ${r.wowPct > 0 ? '+' : ''}${r.wowPct.toFixed(1)}%`;
+                }
+
+                const currDisplay = r.currKPI > 0 ? '$' + r.currKPI.toFixed(2) : '--';
+                const prevDisplay = r.prevKPI > 0 ? '$' + r.prevKPI.toFixed(2) : '--';
+
+                tableRows += `<tr style="border-bottom:1px solid #e5e7eb;">
+                    <td style="padding:6px 8px; font-weight:500;">${r.partner}</td>
+                    <td style="padding:6px 8px; color:#6b7280;">${r.mediaType}</td>
+                    <td style="padding:6px 8px;">${r.kpiLabel}</td>
+                    <td style="padding:6px 8px; text-align:right;">${currDisplay}</td>
+                    <td style="padding:6px 8px; text-align:right;">${prevDisplay}</td>
+                    <td style="padding:6px 8px; text-align:right; ${wowStyle}">${wowCell}</td>
+                </tr>`;
+            });
+
+            return `<div class="wow-comparison-header">Comparing <strong>${currentWeekLabel}</strong> vs <strong>${previousWeekLabel}</strong></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;">
+                ${spendCardHtml}
+                ${impsCardHtml}
+                ${cardsHtml}
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:14px;">
+                <thead>
+                    <tr style="background:#003168; color:white;">
+                        <th style="padding:8px; text-align:left;">Partner</th>
+                        <th style="padding:8px; text-align:left;">Media Type</th>
+                        <th style="padding:8px; text-align:left;">KPI</th>
+                        <th style="padding:8px; text-align:right;">Current (${currentWeekLabel})</th>
+                        <th style="padding:8px; text-align:right;">Previous (${previousWeekLabel})</th>
+                        <th style="padding:8px; text-align:right;">WOW %</th>
+                    </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            <p style="font-size:11px; color:#6b7280; margin-top:8px;"><em>Note: For cost metrics (CPM, eCPM, CPC, CPCV), green (▼) indicates improvement (lower cost). For volume metrics, green (▲) indicates growth.</em></p>`;
+        }
+
+        // Focused variance summary for the AI chat — surfaces what moved most, not the full table.
+        function summarizeWOWVariance(currentWeekKey) {
+            const data = _computeWOWData(currentWeekKey);
+            if (!data) {
+                return `<p>Unable to compute week-over-week variance for the requested week.</p>`;
+            }
+            const { currentWeekLabel, previousWeekLabel, partnerRows, kpiGroups, costMetrics, totals } = data;
+
+            // Threshold: only call out movements >= 2% to filter out noise
+            const NOISE_THRESHOLD = 2;
+
+            // Cost-metric movers (lower is better)
+            const costMovers = partnerRows.filter(r =>
+                r.wowPct !== null && costMetrics.includes(r.kpiLabel) && r.currKPI > 0 && r.prevKPI > 0
+            );
+            const costImprovers = costMovers
+                .filter(r => r.wowPct < -NOISE_THRESHOLD)
+                .sort((a, b) => a.wowPct - b.wowPct)
+                .slice(0, 3);
+            const costWorseners = costMovers
+                .filter(r => r.wowPct > NOISE_THRESHOLD)
+                .sort((a, b) => b.wowPct - a.wowPct)
+                .slice(0, 3);
+
+            // Spend shifts (absolute dollars moved)
+            const spendShifts = partnerRows
+                .filter(r => r.spendWowPct !== null && Math.abs(r.currSpend - r.prevSpend) > 500)
+                .sort((a, b) => Math.abs(b.currSpend - b.prevSpend) - Math.abs(a.currSpend - a.prevSpend))
+                .slice(0, 3);
+
+            // Blended KPI movement (the headline numbers)
+            const blendedMovers = [];
+            Object.entries(kpiGroups).forEach(([kpiLabel, grp]) => {
+                const currVal = grp.currImps > 0 ? grp.currSpend / grp.currImps * 1000 : 0;
+                const prevVal = grp.prevImps > 0 ? grp.prevSpend / grp.prevImps * 1000 : 0;
+                if (prevVal === 0 || currVal === 0) return;
+                const pct = ((currVal - prevVal) / prevVal) * 100;
+                if (Math.abs(pct) >= NOISE_THRESHOLD) {
+                    blendedMovers.push({ kpiLabel, currVal, prevVal, pct, isCost: costMetrics.includes(kpiLabel) });
+                }
+            });
+            blendedMovers.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+
+            // Build the summary
+            let html = `<p><strong>Week-over-Week Variance: ${currentWeekLabel} vs ${previousWeekLabel}</strong></p>`;
+
+            // Headline: overall direction
+            const spendArrow = totals.spendWow >= 0 ? '▲' : '▼';
+            const impsArrow = totals.impsWow >= 0 ? '▲' : '▼';
+            const spendColor = totals.spendWow >= 0 ? '#059669' : '#dc2626';
+            const impsColor = totals.impsWow >= 0 ? '#059669' : '#dc2626';
+            html += `<p><strong>Headline:</strong> Spend <span style="color:${spendColor}; font-weight:600;">${spendArrow} ${totals.spendWow !== null ? (totals.spendWow >= 0 ? '+' : '') + totals.spendWow.toFixed(1) + '%' : 'flat'}</span> to ${formatCurrency(totals.currSpend)}, Impressions <span style="color:${impsColor}; font-weight:600;">${impsArrow} ${totals.impsWow !== null ? (totals.impsWow >= 0 ? '+' : '') + totals.impsWow.toFixed(1) + '%' : 'flat'}</span> to ${(totals.currImps/1e6).toFixed(2)}M.</p>`;
+
+            // Blended KPI movement (most strategic signal)
+            if (blendedMovers.length > 0) {
+                html += `<p style="margin-top:10px;"><strong>Blended KPI movement:</strong></p><ul style="margin:4px 0;">`;
+                blendedMovers.slice(0, 3).forEach(m => {
+                    const isImproved = m.isCost ? m.pct < 0 : m.pct > 0;
+                    const color = isImproved ? '#059669' : '#dc2626';
+                    const arrow = m.pct >= 0 ? '▲' : '▼';
+                    const verdict = m.isCost ? (isImproved ? 'efficiency improved' : 'cost increased') : (isImproved ? 'volume up' : 'volume down');
+                    html += `<li><strong>${m.kpiLabel}</strong>: $${m.prevVal.toFixed(2)} → $${m.currVal.toFixed(2)} <span style="color:${color}; font-weight:600;">${arrow} ${m.pct >= 0 ? '+' : ''}${m.pct.toFixed(1)}%</span> <em style="color:#6b7280;">(${verdict})</em></li>`;
+                });
+                html += `</ul>`;
+            }
+
+            // Cost concerns first (action-oriented)
+            if (costWorseners.length > 0) {
+                html += `<p style="margin-top:10px;"><strong style="color:#dc2626;">⚠ Cost increased - review:</strong></p><ul style="margin:4px 0;">`;
+                costWorseners.forEach(r => {
+                    html += `<li><strong>${r.partner}</strong> (${r.mediaType}): ${r.kpiLabel} $${r.prevKPI.toFixed(2)} → $${r.currKPI.toFixed(2)} <span style="color:#dc2626; font-weight:600;">▲ +${r.wowPct.toFixed(1)}%</span></li>`;
+                });
+                html += `</ul>`;
+            }
+
+            // Cost wins
+            if (costImprovers.length > 0) {
+                html += `<p style="margin-top:10px;"><strong style="color:#059669;">✓ Cost improved:</strong></p><ul style="margin:4px 0;">`;
+                costImprovers.forEach(r => {
+                    html += `<li><strong>${r.partner}</strong> (${r.mediaType}): ${r.kpiLabel} $${r.prevKPI.toFixed(2)} → $${r.currKPI.toFixed(2)} <span style="color:#059669; font-weight:600;">▼ ${r.wowPct.toFixed(1)}%</span></li>`;
+                });
+                html += `</ul>`;
+            }
+
+            // Spend reallocation
+            if (spendShifts.length > 0) {
+                html += `<p style="margin-top:10px;"><strong>Largest spend shifts:</strong></p><ul style="margin:4px 0;">`;
+                spendShifts.forEach(r => {
+                    const delta = r.currSpend - r.prevSpend;
+                    const dir = delta >= 0 ? '+' : '';
+                    const color = delta >= 0 ? '#059669' : '#dc2626';
+                    html += `<li><strong>${r.partner}</strong>: ${formatCurrency(r.prevSpend)} → ${formatCurrency(r.currSpend)} <span style="color:${color}; font-weight:600;">(${dir}${formatCurrency(delta)})</span></li>`;
+                });
+                html += `</ul>`;
+            }
+
+            if (costWorseners.length === 0 && costImprovers.length === 0 && blendedMovers.length === 0 && spendShifts.length === 0) {
+                html += `<p style="margin-top:8px;">No significant variances (>${NOISE_THRESHOLD}% on KPIs or >$500 on spend) this comparison. Performance was largely stable week-over-week.</p>`;
+            }
+
+            html += `<p style="margin-top:12px; font-size:11px; color:#6b7280; padding-top:8px; border-top:1px solid #e5e7eb;"><em>For the full partner-level breakdown with all KPI cards and the comparison table, open the <strong>Insights tab → Week-over-Week Trends</strong> and use the week selector.</em></p>`;
+
+            return html;
+        }
+
+        // Called when the user changes the Insights-tab WOW week selector
+        function onWOWWeekChange(weekKey) {
+            const body = document.getElementById('wow-content-body');
+            if (body) body.innerHTML = computeWOWHtml(weekKey);
+        }
+
         function generateAIResponse(question) {
             const q = question.toLowerCase();
             const ctx = dataContext;
@@ -4763,88 +5507,36 @@
                 </ul>`;
             }
 
-            // WOW (Week-over-Week) comparison handler
+            // WOW (Week-over-Week) comparison handler — delegates to shared computeWOWHtml
             if (q.includes('wow') || q.includes('week over week') || q.includes('week-over-week') ||
                 (q.includes('week') && q.includes('change')) || (q.includes('week') && q.includes('compar')) ||
                 q.includes('period over period')) {
 
-                // Get week labels from context
-                const wLabels = ctx.weekLabels || [];
-                if (wLabels.length < 2) {
-                    return `<p>I need at least <strong>2 weeks of data</strong> to calculate week-over-week changes. Currently I have ${wLabels.length} week(s) of data. Please upload a report with multiple weekly columns to enable WOW analysis.</p>`;
-                }
-
-                const activePartners = allPartners.filter(p => p.spend > 0 && p.mediaType && p.mediaType.toLowerCase() !== 'total');
-
-                // Find actual week keys from partner weeklyMetrics
-                // Collect week keys and compute totals per week to filter out empty weeks
-                let weekTotals = {}; // { weekKey: { spend: total, impressions: total } }
-                activePartners.forEach(p => {
-                    if (p.weeklyMetrics) {
-                        Object.entries(p.weeklyMetrics).forEach(([k, v]) => {
-                            if (!weekTotals[k]) weekTotals[k] = { spend: 0, impressions: 0 };
-                            weekTotals[k].spend += v.spend || 0;
-                            weekTotals[k].impressions += v.impressions || 0;
-                        });
-                    }
-                });
-                // Only include weeks that have actual data (non-zero spend or impressions)
-                let allWeekKeys = Object.keys(weekTotals).filter(k =>
-                    weekTotals[k].spend > 0 || weekTotals[k].impressions > 0
-                );
-
+                const allWeekKeys = getActiveWeekKeys();
                 if (allWeekKeys.length < 2) {
-                    const totalWeeks = Object.keys(weekTotals).length;
-                    return `<p>I need at least <strong>2 weeks with data</strong> to calculate week-over-week changes. Found ${totalWeeks} week column(s) in the report but only ${allWeekKeys.length} had non-zero data. Please ensure your report spans at least 2 active weeks.</p>`;
+                    return `<p>I need at least <strong>2 weeks of data</strong> to calculate week-over-week changes. Currently I have ${allWeekKeys.length} week(s) of data with non-zero activity. Please upload a report with multiple weekly columns to enable WOW analysis.</p>`;
                 }
 
-                // Sort week keys chronologically (date-aware sort)
-                allWeekKeys.sort((a, b) => {
-                    const da = new Date(a);
-                    const db = new Date(b);
-                    if (!isNaN(da) && !isNaN(db)) return da - db;
-                    const wa = a.match(/Week\s*(\d+)/i);
-                    const wb = b.match(/Week\s*(\d+)/i);
-                    if (wa && wb) return parseInt(wa[1]) - parseInt(wb[1]);
-                    return a.localeCompare(b);
-                });
-
-                // Short labels for display
-                const shortLabel = (lbl) => {
-                    const m = lbl.match(/^(\w+)\s+(\d+)/);
-                    return m ? m[1].substring(0, 3) + ' ' + m[2] : lbl;
-                };
-
-                // Determine which week the user is asking about
-                // Try to match a date/week reference in the question (e.g., "feb 10", "january 26", "week 3")
-                let targetWeekIdx = allWeekKeys.length - 1; // default: latest week
-                const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-
-                // Check for month + day pattern in question (e.g., "feb 10", "january 26")
+                // Determine which week the user is asking about (default = latest)
+                let targetIdx = allWeekKeys.length - 1;
                 const dateMatch = q.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s*(\d{1,2})\b/i);
-                // Check for "week N" pattern
                 const weekMatch = q.match(/\bweek\s*(\d+)\b/i);
 
                 if (dateMatch) {
                     const searchMonth = dateMatch[1].toLowerCase().substring(0, 3);
-                    const searchDay = dateMatch[2];
-                    // Find the week key that matches this date (use word boundary for day to avoid matching year)
-                    const dayRegex = new RegExp('\\b' + searchDay + '\\b');
+                    const dayRegex = new RegExp('\\b' + dateMatch[2] + '\\b');
                     const matchIdx = allWeekKeys.findIndex(k => {
                         const kLower = k.toLowerCase();
                         return kLower.includes(searchMonth) && dayRegex.test(k);
                     });
                     if (matchIdx >= 1) {
-                        targetWeekIdx = matchIdx;
+                        targetIdx = matchIdx;
                     } else if (matchIdx === 0) {
-                        // First week — no previous week to compare
-                        return `<p>Cannot show WOW for <strong>${shortLabel(allWeekKeys[0])}</strong> because it's the first week in the data — there's no previous week to compare against.</p>
-                        <p>Available weeks for WOW comparison: ${allWeekKeys.slice(1).map(k => '<strong>' + shortLabel(k) + '</strong>').join(', ')}</p>
-                        <p><em>Try asking: "WOW results for ${shortLabel(allWeekKeys[1])}"</em></p>`;
+                        return `<p>Cannot show WOW for <strong>${_wowShortLabel(allWeekKeys[0])}</strong> — it's the first week, so there's no prior week to compare against.</p>
+                        <p>Available weeks for WOW comparison: ${allWeekKeys.slice(1).map(k => '<strong>' + _wowShortLabel(k) + '</strong>').join(', ')}</p>`;
                     } else {
                         return `<p>I couldn't find a week matching "<strong>${dateMatch[0]}</strong>" in your data.</p>
-                        <p>Available weeks: ${allWeekKeys.map(k => '<strong>' + shortLabel(k) + '</strong>').join(', ')}</p>
-                        <p><em>Try asking: "WOW results for ${shortLabel(allWeekKeys[allWeekKeys.length - 1])}"</em></p>`;
+                        <p>Available weeks: ${allWeekKeys.map(k => '<strong>' + _wowShortLabel(k) + '</strong>').join(', ')}</p>`;
                     }
                 } else if (weekMatch && !q.includes('week over week') && !q.includes('week-over-week')) {
                     const weekNum = parseInt(weekMatch[1]);
@@ -4853,221 +5545,22 @@
                         return wm && parseInt(wm[1]) === weekNum;
                     });
                     if (matchIdx >= 1) {
-                        targetWeekIdx = matchIdx;
+                        targetIdx = matchIdx;
                     } else if (matchIdx === 0) {
-                        return `<p>Cannot show WOW for <strong>${shortLabel(allWeekKeys[0])}</strong> — it's the first week, no previous week to compare.</p>
-                        <p>Available weeks for WOW: ${allWeekKeys.slice(1).map(k => '<strong>' + shortLabel(k) + '</strong>').join(', ')}</p>`;
+                        return `<p>Cannot show WOW for <strong>${_wowShortLabel(allWeekKeys[0])}</strong> — it's the first week, no prior week to compare.</p>`;
                     }
                 }
 
-                const currentWeekKey = allWeekKeys[targetWeekIdx];
-                const previousWeekKey = allWeekKeys[targetWeekIdx - 1];
-                const currentWeekLabel = shortLabel(currentWeekKey);
-                const previousWeekLabel = shortLabel(previousWeekKey);
-
-                // Helper to compute KPI value from spend & impressions + partner context
-                function computePartnerKPI(p, spend, impressions) {
-                    const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || '';
-                    const kl = kpi.toLowerCase();
-                    if (kl.includes('cpc') && !kl.includes('cpcv')) {
-                        if (p.clicks > 0 && p.impressions > 0) {
-                            const ctr = p.clicks / p.impressions;
-                            const estClicks = impressions * ctr;
-                            return estClicks > 0 ? spend / estClicks : 0;
-                        }
-                        return 0;
-                    }
-                    if (kl === 'cpcv') {
-                        if (p.completeViews > 0 && p.impressions > 0) {
-                            const cvRate = p.completeViews / p.impressions;
-                            const estCV = impressions * cvRate;
-                            return estCV > 0 ? spend / estCV : 0;
-                        }
-                        return 0;
-                    }
-                    if (kl === 'cple' || kl === 'cplpe') {
-                        return impressions > 0 ? spend / impressions * 1000 : 0;
-                    }
-                    return impressions > 0 ? spend / impressions * 1000 : 0;
-                }
-
-                function getKPITypeLabel(p) {
-                    const kpi = (p.optimizingKPIs && p.optimizingKPIs[0]) || '';
-                    const kl = kpi.toLowerCase();
-                    if (kl.includes('viewable') && kl.includes('cpm')) return 'eCPM';
-                    if (kl === 'ecpm') return 'eCPM';
-                    if (kl === 'cpm') return 'CPM';
-                    if (kl === 'cpc') return 'CPC';
-                    if (kl === 'cpcv') return 'CPCV';
-                    if (kl === 'cple' || kl === 'cplpe') return 'CPLE';
-                    if (kl === 'dooh') return 'eCPM';
-                    return 'CPM';
-                }
-
-                const costMetrics = ['eCPM', 'CPM', 'CPC', 'CPCV', 'CPLE', 'CPA'];
-
-                // Build per-partner WOW data
-                let partnerRows = [];
-                let kpiGroups = {};
-
-                activePartners.forEach(p => {
-                    if (!p.weeklyMetrics) return;
-                    const curr = p.weeklyMetrics[currentWeekKey];
-                    const prev = p.weeklyMetrics[previousWeekKey];
-                    if (!curr && !prev) return;
-
-                    const currSpend = curr ? curr.spend : 0;
-                    const prevSpend = prev ? prev.spend : 0;
-                    const currImps = curr ? curr.impressions : 0;
-                    const prevImps = prev ? prev.impressions : 0;
-
-                    const currKPI = computePartnerKPI(p, currSpend, currImps);
-                    const prevKPI = computePartnerKPI(p, prevSpend, prevImps);
-                    const kpiLabel = getKPITypeLabel(p);
-
-                    let wowPct = null;
-                    if (prevKPI > 0 && currKPI > 0) {
-                        wowPct = ((currKPI - prevKPI) / prevKPI) * 100;
-                    }
-
-                    partnerRows.push({
-                        partner: p.partner, mediaType: p.mediaType, kpiLabel,
-                        currKPI, prevKPI, wowPct, currSpend, prevSpend
-                    });
-
-                    if (!kpiGroups[kpiLabel]) {
-                        kpiGroups[kpiLabel] = { currSpend: 0, prevSpend: 0, currImps: 0, prevImps: 0, count: 0 };
-                    }
-                    kpiGroups[kpiLabel].currSpend += currSpend;
-                    kpiGroups[kpiLabel].prevSpend += prevSpend;
-                    kpiGroups[kpiLabel].currImps += currImps;
-                    kpiGroups[kpiLabel].prevImps += prevImps;
-                    kpiGroups[kpiLabel].count++;
-                });
-
-                partnerRows.sort((a, b) => Math.abs(b.wowPct || 0) - Math.abs(a.wowPct || 0));
-
-                // Build KPI summary cards
-                let cardsHtml = '';
-                Object.entries(kpiGroups).forEach(([kpiLabel, grp]) => {
-                    const currVal = grp.currImps > 0 ? grp.currSpend / grp.currImps * 1000 : 0;
-                    const prevVal = grp.prevImps > 0 ? grp.prevSpend / grp.prevImps * 1000 : 0;
-
-                    let wowPct = prevVal > 0 ? ((currVal - prevVal) / prevVal) * 100 : null;
-                    const isCost = costMetrics.includes(kpiLabel);
-                    let wowColor = '#6b7280';
-                    let wowText = '--';
-
-                    if (wowPct !== null) {
-                        if (isCost) {
-                            wowColor = wowPct <= 0 ? '#059669' : '#dc2626';
-                            const ind = wowPct <= 0 ? '▼' : '▲';
-                            wowText = `${ind} ${wowPct > 0 ? '+' : ''}${wowPct.toFixed(1)}% ${wowPct <= 0 ? '(improvement)' : '(increase)'}`;
-                        } else {
-                            wowColor = wowPct >= 0 ? '#059669' : '#dc2626';
-                            const ind = wowPct >= 0 ? '▲' : '▼';
-                            wowText = `${ind} ${wowPct > 0 ? '+' : ''}${wowPct.toFixed(1)}%`;
-                        }
-                    }
-
-                    cardsHtml += `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid ${wowColor};">
-                        <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">${kpiLabel} (Blended)</div>
-                        <div style="font-size:18px; font-weight:700; margin:4px 0;">$${currVal.toFixed(2)}</div>
-                        <div style="font-size:11px; color:#6b7280;">Previous: $${prevVal.toFixed(2)}</div>
-                        <div style="font-size:11px; color:${wowColor}; font-weight:600;">${wowText}</div>
-                    </div>`;
-                });
-
-                // Spend & Impressions summary cards
-                let totalCurrSpend = 0, totalPrevSpend = 0, totalCurrImps = 0, totalPrevImps = 0;
-                activePartners.forEach(p => {
-                    if (!p.weeklyMetrics) return;
-                    const curr = p.weeklyMetrics[currentWeekKey];
-                    const prev = p.weeklyMetrics[previousWeekKey];
-                    totalCurrSpend += curr ? curr.spend : 0;
-                    totalPrevSpend += prev ? prev.spend : 0;
-                    totalCurrImps += curr ? curr.impressions : 0;
-                    totalPrevImps += prev ? prev.impressions : 0;
-                });
-
-                const spendWow = totalPrevSpend > 0 ? ((totalCurrSpend - totalPrevSpend) / totalPrevSpend * 100) : null;
-                const impsWow = totalPrevImps > 0 ? ((totalCurrImps - totalPrevImps) / totalPrevImps * 100) : null;
-
-                let spendCardHtml = `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid #003168;">
-                    <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Total Spend</div>
-                    <div style="font-size:18px; font-weight:700; margin:4px 0;">${formatCurrency(totalCurrSpend)}</div>
-                    <div style="font-size:11px; color:#6b7280;">Previous: ${formatCurrency(totalPrevSpend)}</div>
-                    <div style="font-size:11px; color:#6b7280; font-weight:600;">${spendWow !== null ? (spendWow >= 0 ? '▲ +' : '▼ ') + spendWow.toFixed(1) + '%' : '--'}</div>
-                </div>`;
-
-                let impsCardHtml = `<div style="background:#f0f4f8; padding:12px; border-radius:8px; flex:1; min-width:130px; border-left:3px solid #003168;">
-                    <div style="font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Impressions</div>
-                    <div style="font-size:18px; font-weight:700; margin:4px 0;">${(totalCurrImps/1e6).toFixed(2)}M</div>
-                    <div style="font-size:11px; color:#6b7280;">Previous: ${(totalPrevImps/1e6).toFixed(2)}M</div>
-                    <div style="font-size:11px; color:#6b7280; font-weight:600;">${impsWow !== null ? (impsWow >= 0 ? '▲ +' : '▼ ') + impsWow.toFixed(1) + '%' : '--'}</div>
-                </div>`;
-
-                // Build partner detail table
-                let tableRows = '';
-                partnerRows.forEach(r => {
-                    const isCost = costMetrics.includes(r.kpiLabel);
-                    let wowCell = '--';
-                    let wowStyle = 'color:#6b7280;';
-
-                    if (r.wowPct !== null) {
-                        if (isCost) {
-                            wowStyle = r.wowPct <= 0 ? 'color:#059669; font-weight:600;' : 'color:#dc2626; font-weight:600;';
-                        } else {
-                            wowStyle = r.wowPct >= 0 ? 'color:#059669; font-weight:600;' : 'color:#dc2626; font-weight:600;';
-                        }
-                        const arrow = r.wowPct >= 0 ? '▲' : '▼';
-                        wowCell = `${arrow} ${r.wowPct > 0 ? '+' : ''}${r.wowPct.toFixed(1)}%`;
-                    }
-
-                    const currDisplay = r.currKPI > 0 ? '$' + r.currKPI.toFixed(2) : '--';
-                    const prevDisplay = r.prevKPI > 0 ? '$' + r.prevKPI.toFixed(2) : '--';
-
-                    tableRows += `<tr style="border-bottom:1px solid #e5e7eb;">
-                        <td style="padding:6px 8px; font-weight:500;">${r.partner}</td>
-                        <td style="padding:6px 8px; color:#6b7280;">${r.mediaType}</td>
-                        <td style="padding:6px 8px;">${r.kpiLabel}</td>
-                        <td style="padding:6px 8px; text-align:right;">${currDisplay}</td>
-                        <td style="padding:6px 8px; text-align:right;">${prevDisplay}</td>
-                        <td style="padding:6px 8px; text-align:right; ${wowStyle}">${wowCell}</td>
-                    </tr>`;
-                });
-
-                // Build available weeks hint for the user
-                const otherWeeks = allWeekKeys.slice(1).filter((_, i) => allWeekKeys[i + 1] !== currentWeekKey)
-                    .map(k => shortLabel(k));
-                let weekHint = '';
+                const targetKey = allWeekKeys[targetIdx];
+                let hint = '';
                 if (allWeekKeys.length > 2) {
-                    weekHint = `<p style="font-size:11px; color:#6b7280; margin-top:6px;">📅 <em>Want a different week? Try: ${allWeekKeys.slice(1).map(k => '"WOW for ' + shortLabel(k) + '"').join(', ')}</em></p>`;
+                    const others = allWeekKeys.slice(1).filter(k => k !== targetKey);
+                    if (others.length) {
+                        hint = `<p style="font-size:11px; color:#6b7280; margin-top:6px;">📅 <em>Want a different week? Try: ${others.map(k => '"WOW for ' + _wowShortLabel(k) + '"').join(', ')}.</em></p>`;
+                    }
                 }
 
-                return `<p><strong>Week-over-Week Comparison: ${currentWeekLabel} vs ${previousWeekLabel}</strong></p>
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;">
-                    ${spendCardHtml}
-                    ${impsCardHtml}
-                    ${cardsHtml}
-                </div>
-                <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:14px;">
-                    <thead>
-                        <tr style="background:#003168; color:white;">
-                            <th style="padding:8px; text-align:left;">Partner</th>
-                            <th style="padding:8px; text-align:left;">Media Type</th>
-                            <th style="padding:8px; text-align:left;">KPI</th>
-                            <th style="padding:8px; text-align:right;">Current (${currentWeekLabel})</th>
-                            <th style="padding:8px; text-align:right;">Previous (${previousWeekLabel})</th>
-                            <th style="padding:8px; text-align:right;">WOW %</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
-                <p style="font-size:11px; color:#6b7280; margin-top:8px;"><em>Note: For cost metrics (CPM, eCPM, CPC, CPCV), green (▼) indicates improvement (lower cost). For volume metrics, green (▲) indicates growth.</em></p>
-                ${weekHint}`;
+                return summarizeWOWVariance(targetKey) + hint;
             }
 
             // Best/worst week handler

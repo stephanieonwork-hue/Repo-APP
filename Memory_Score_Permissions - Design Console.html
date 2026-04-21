@@ -124,18 +124,6 @@ const STAGES = [
   { id: 6, key: 'disrupt', name: 'Disrupt Memory', short: 'Disrupt', icon: 'zap', abbr: 'DI', hex: '#64748b', formula: 'Brand Imp − Category Imp', type: 'Differential', healthy: 10, warning: 5, metrics: ['brandImpression', 'categoryImpression'], labels: { brandImpression: 'Brand Impression', categoryImpression: 'Category Impression' }, help: { brandImpression: '% with positive brand impression', categoryImpression: '% with positive impression of category average' }, diagnosis: "below category benchmark—not standing out", questions: ['Are we above category average?', 'Distinctive enough to stand out?', 'Why are customers switching?', 'Own unique attributes?', 'Winning or losing share of mind?'], warnings: ['Below category (negative differential)', 'Category gaining while flat', 'Parity with category'], interventions: ['Audit category positioning', 'Strengthen distinctiveness', 'Increase SOV to stand out'] }
 ];
 
-const DESIGN_CONSOLE_OBJECTIVES = {
-  objectives: ['Notice', 'Want/Desire', 'Seek More', 'Try/Buy', 'Talk About', 'Recommend'],
-  stages: {
-    create:       { goal: 'Introduce a new memory association',        mix: [50, 25, 20,  0,  5,  0] },
-    expand:       { goal: 'Broaden what the brand is chosen for',      mix: [15, 30, 10, 10, 35,  0] },
-    strengthen:   { goal: 'Strengthen the memory to build saliency',   mix: [10,  5,  0, 20, 25, 40] },
-    retrieve:     { goal: 'Trigger memory in the moment of category need', mix: [10, 25,  5, 60,  0,  0] },
-    reinvigorate: { goal: 'Become known again',                        mix: [40, 25, 15, 20,  0,  0] },
-    disrupt:      { goal: 'Challenge a default memory structure',      mix: [30, 20, 10,  5, 35,  0] }
-  }
-};
-
 const YOUGOV_COLS = ['Awareness', 'Buzz', 'Consideration', 'Former Customer', 'Impression', 'Purchase Intent', 'Recommend', 'Satisfaction', 'WOM Exposure'];
 const DEMO_DATA = { awareness: 72, consideration: 45, buzz: 28, womExposure: 22, satisfaction: 68, recommendation: 54, purchaseIntent: 32, formerCustomer: 8, brandImpression: 48, categoryImpression: 35 };
 
@@ -176,16 +164,7 @@ let state = {
   prevEndDate: '',
   prevParsedTable: { headers: [], rows: [] },
   prevBrandRowIdx: 0,
-  prevImportError: null,
-  // Omni task allocations per stage: array of {task, pct}
-  omniTasks: {
-    create: [],
-    expand: [],
-    strengthen: [],
-    retrieve: [],
-    reinvigorate: [],
-    disrupt: []
-  }
+  prevImportError: null
 };
 
 let radarChart = null;
@@ -528,19 +507,39 @@ function applyImportData() {
   
   state.metrics = { ...brandMetrics, categoryImpression: catImp };
   state.config.brandName = brandRow.name;
-  if (compRow) state.config.competitor = compRow.name;
-  if (catRow) state.config.category = catRow.name;
-  
+
+  // Competitor: use the imported row if present, otherwise wipe demo values
+  // so nothing from the sample dataset bleeds into the real report.
+  if (compRow) {
+    state.config.competitor = compRow.name;
+    state.compScores = calcScores(toMetrics(compRow.values), catImp);
+  } else {
+    state.config.competitor = '';
+    state.compScores = { create: 0, expand: 0, strengthen: 0, retrieve: 0, reinvigorate: 0, disrupt: 0 };
+  }
+
+  // Category: same treatment as competitor.
+  if (catRow) {
+    state.config.category = catRow.name;
+    const catM = toMetrics(catRow.values);
+    state.catScores = calcScores(catM, catM.brandImpression);
+  } else {
+    state.config.category = '';
+    state.catScores = { create: 0, expand: 0, strengthen: 0, retrieve: 0, reinvigorate: 0, disrupt: 0 };
+  }
+
   // Auto-generate period label from dates
   const periodLabel = formatPeriodLabel(state.periodStartDate, state.periodEndDate);
   if (periodLabel) state.config.period = periodLabel;
-  
-  if (compRow) state.compScores = calcScores(toMetrics(compRow.values), catImp);
-  if (catRow) {
-    const catM = toMetrics(catRow.values);
-    state.catScores = calcScores(catM, catM.brandImpression);
-  }
-  
+
+  // Previous period is never part of the main import; clear it so the user
+  // imports fresh previous data via the Compare tab. Also snap compareMode
+  // back to competitor in case the user was viewing demo previous data.
+  state.prevScores = null;
+  state.prevPeriod = '';
+  state.prevBrandName = '';
+  if (state.compareMode === 'previous') state.compareMode = 'competitor';
+
   state.pasteText = '';
   state.periodStartDate = '';
   state.periodEndDate = '';
@@ -2439,40 +2438,6 @@ function renderFrameworkView() {
             </div>
           </div>
 
-          <!-- Design Console Objective Mix -->
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            ${(() => {
-              const dco = DESIGN_CONSOLE_OBJECTIVES.stages[stage.key];
-              const objectives = DESIGN_CONSOLE_OBJECTIVES.objectives;
-              const maxPct = Math.max(...dco.mix);
-              return `
-              <h3 class="font-semibold text-slate-800 flex items-center gap-2 mb-1">
-                ${icon('target', 'w-4 h-4')} Design Console Objective Mix
-              </h3>
-              <p class="text-xs text-slate-500 mb-3">Goal: ${dco.goal}</p>
-              <div class="space-y-1.5">
-                ${objectives.map((obj, i) => {
-                  const pct = dco.mix[i];
-                  const isMax = pct === maxPct && pct > 0;
-                  return `
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs w-20 flex-shrink-0 ${isMax ? 'font-bold text-slate-800' : 'text-slate-600'}">${obj}</span>
-                      <div class="flex-1 h-4 bg-slate-100 rounded-full overflow-hidden">
-                        ${pct > 0 ? `<div class="h-full rounded-full transition-all" style="width: ${pct}%; background-color: ${isMax ? stage.hex : stage.hex + '80'}"></div>` : ''}
-                      </div>
-                      <span class="text-xs w-8 text-right font-bold flex-shrink-0" style="color: ${pct > 0 ? stage.hex : '#94a3b8'}">${pct}%</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-              <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
-                <span class="text-[10px] font-semibold text-slate-400">Total</span>
-                <span class="text-xs font-bold text-emerald-600">${dco.mix.reduce((a, b) => a + b, 0)}%</span>
-              </div>
-              `;
-            })()}
-          </div>
-
           <!-- Questions -->
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
             <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
@@ -3030,6 +2995,18 @@ window.setCompareScore = function(key, val) {
   render();
 };
 
+// Expose onclick handlers that are declared as top-level functions.
+// Inline onclick="fn()" attributes resolve via window.fn, so these bindings
+// are required even though `function fn(){}` is technically global in a
+// classic script. Without them the click silently ReferenceErrors and state
+// never updates (e.g. "Update Previous Period" appeared to do nothing).
+window.applyImportData = applyImportData;
+window.applyPrevImport = applyPrevImport;
+window.clearImport = clearImport;
+window.clearPrevImport = clearPrevImport;
+window.clearAll = clearAll;
+window.resetDemo = resetDemo;
+
 // Previous period handlers
 window.showPrevImportPanel = function() { state.showPrevImport = true; render(); };
 window.cancelPrevImport = function() { 
@@ -3050,27 +3027,6 @@ window.handlePrevPaste = function(text) {
   render();
 };
 window.setPrevBrandRow = function(v) { state.prevBrandRowIdx = parseInt(v); render(); };
-
-// Omni task handlers
-window.addOmniTask = function(stageKey) {
-  if (!isEditor()) return;
-  state.omniTasks[stageKey].push({ task: '', pct: 0 });
-  render();
-};
-window.removeOmniTask = function(stageKey, idx) {
-  if (!isEditor()) return;
-  state.omniTasks[stageKey].splice(idx, 1);
-  render();
-};
-window.setOmniTask = function(stageKey, idx, field, value) {
-  if (!isEditor()) return;
-  if (field === 'pct') {
-    state.omniTasks[stageKey][idx].pct = Math.max(0, Math.min(100, parseInt(value) || 0));
-  } else {
-    state.omniTasks[stageKey][idx].task = value;
-  }
-  render();
-};
 
 // Dropdown handlers
 window.toggleDashboardDropdown = function(event) {
